@@ -11,7 +11,26 @@ def initialize():
   db.create_all()
   bob = User('bob', 'bob@mail.com', 'bobpass')
   print(bob)
+  db.session.add(bob)
+  db.session.commit()
   print('database intialized')
+
+#Task 4.1
+@app.cli.command("get-user", help="Retrieves a User")
+@click.argument('username', default='bob')
+def get_user(username):
+  bob = User.query.filter_by(username=username).first()
+  if not bob:
+    print(f'{username} not found!')
+    return
+  print(bob)
+
+#Task 4.2
+@app.cli.command('get-users')
+def get_users():
+  # gets all objects of a model
+  users = User.query.all()
+  print(users)
 
 @app.cli.command("create-user", help="Creates a new user")
 @click.argument('username')
@@ -27,3 +46,17 @@ def create_user(username, email, password):
     print(f'ERROR: Username {username} or Email {email} already exists')
   else:
     print(f'User {username} created')
+
+#Task 5
+@app.cli.command("change-email")
+@click.argument('username', default='bob')
+@click.argument('email', default='bob@mail.com')
+def change_email(username, email):
+  user = User.query.filter_by(username=username).first()
+  if not user:
+      print(f'{username} not found!')
+      return
+  user.email = email
+  db.session.add(user)
+  db.session.commit()
+  print(user)
