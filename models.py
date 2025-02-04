@@ -12,7 +12,8 @@ class User(db.Model):
   username = db.Column(db.String(80), unique=True, nullable=False)
   email = db.Column(db.String(120), unique=True, nullable=False)
   password = db.Column(db.String(120), nullable=False)
-
+  
+#Task 2
   def __init__(self, username, email, password):
     self.username = username
     self.email = email
@@ -23,4 +24,4 @@ class User(db.Model):
     self.password = generate_password_hash(password, method='scrypt')
 
   def __repr__(self):
-    return f'<User {self.id} {self.username} - {self.email}>'
+    return f'<User {self.username} - {self.email}>'
