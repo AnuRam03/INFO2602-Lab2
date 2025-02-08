@@ -32,20 +32,21 @@ def get_users():
   users = User.query.all()
   print(users)
 
-@app.cli.command("create-user", help="Creates a new user")
-@click.argument('username')
-@click.argument('email')
-@click.argument('password')
-def create_user(username, email, password):
-  try:
-    new_user = User(username, email, password)
-    db.session.add(new_user)
-    db.session.commit()
-  except IntegrityError:
-    db.session.rollback()
-    print(f'ERROR: Username {username} or Email {email} already exists')
-  else:
-    print(f'User {username} created')
+#Original create-user command - Updated in Task 6
+#@app.cli.command("create-user", help="Creates a new user")
+#@click.argument('username')
+#@click.argument('email')
+#@click.argument('password')
+#def create_user(username, email, password):
+#  try:
+#    new_user = User(username, email, password)
+#    db.session.add(new_user)
+#    db.session.commit()
+#  except IntegrityError:
+#    db.session.rollback()
+#    print(f'ERROR: Username {username} or Email {email} already exists')
+#  else:
+#    print(f'User {username} created')
 
 #Task 5
 @app.cli.command("change-email")
@@ -60,3 +61,24 @@ def change_email(username, email):
   db.session.add(user)
   db.session.commit()
   print(user)
+
+#Task 6
+@app.cli.command('create-user')
+@click.argument('username', default='rick')
+@click.argument('email', default='rick@mail.com')
+@click.argument('password', default='rickpass')
+def create_user(username, email, password):
+  newuser = User(username, email, password) #create user object then add to db
+  message = ""
+  try:
+    db.session.add(newuser)
+    db.session.commit()
+  except IntegrityError as e:
+    #let's the database undo any previous steps of a transaction
+    db.session.rollback()
+    # print(e.orig) #optionally print the error raised by the database
+    message = "Username or email already taken!" #give the user a useful message
+  else:
+    message = f'User {username} created' # print the newly created user
+  finally: #this is new, it will always run
+    print(message)
